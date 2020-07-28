@@ -104,6 +104,7 @@ class Trainer:
         mailbox = pmanager.Queue()
 
         # workers starting working on making svm units
+        # 可能是数据中的nan导致的，先做数据简化，顺便处理nan数值
         pool.map(make_svm_unit, create_packets(pairs, mailbox))
 
         # each time a worker returns the pickle path to the trained SVM unit

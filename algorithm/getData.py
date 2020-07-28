@@ -19,9 +19,9 @@ def getDayData(num):
     data = np.zeros((72000, 912))
     for hour in range(24):
         if hour < 10:
-            datatemp = hdf5storage.loadmat(date + '/' + date + ' 0' + str(hour) + '-VIB.mat')['data']
+            datatemp = hdf5storage.loadmat('../'+date + '/' + date + ' 0' + str(hour) + '-VIB.mat')['data']
         else:
-            datatemp = hdf5storage.loadmat(date + '/' + date + ' ' + str(hour) + '-VIB.mat')['data']
+            datatemp = hdf5storage.loadmat('../'+date + '/' + date + ' ' + str(hour) + '-VIB.mat')['data']
         for j in range(38):
             data[:, hour * 38 + j] = datatemp[:, j]
 
@@ -29,7 +29,7 @@ def getDayData(num):
 
 
 def getLabel():
-    return hdf5storage.loadmat('label_r.mat')['manual_r']
+    return hdf5storage.loadmat('../label_r.mat')['manual_r']
 
 
 """

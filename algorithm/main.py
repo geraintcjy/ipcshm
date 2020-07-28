@@ -56,7 +56,7 @@ if __name__ == '__main__':
                         help='The support vector\'s minimum Lagrange multipliers value')
     parser.add_argument('cross_validate', nargs='?', type=bool, default=False,
                         help='Whether or not to cross validate SVM')
-    parser.add_argument('evaluate_features', nargs='?', type=bool, default=False,
+    parser.add_argument('evaluate_features', nargs='?', type=bool, default=True,
                         help='Will read the cache of feature evaluation results if set to False')
     parser.add_argument('mode', nargs='?', type=str, default='prod', choices=['dev', 'prod'],
                         help='Reads dev data in ../input-dev/ if set to dev mode, otherwise looks for datasets in '

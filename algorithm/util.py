@@ -168,7 +168,7 @@ def make_training_data(training_path, labels_path):
     return data
 
 
-def feature_selection(dataframe, features_ig, min_ig=0.0107036):
+def feature_selection(dataframe, features_ig, min_ig=0):
     """
     Compute information gain and remove redundant features whose info gain values are below min_ig.
     Reference: [A survey of text classification algorithms](www.time.mk/trajkovski/thesis/text-class.pdf)
