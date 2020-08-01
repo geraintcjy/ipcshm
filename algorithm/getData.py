@@ -14,8 +14,9 @@ length = 15  # 数据简化的步长
 
 def simplifier(data, length):
     # 取每length个数中绝对值最大的
-    answer = np.zeros((912, 72000 // length))
-    for i in range(912):
+    col_num = data.shape[1]
+    answer = np.zeros((col_num, 72000 // length))
+    for i in range(col_num):
         maxnum = 0.  # 记录最大值
         count = 0  # 控制length
         new_column = np.zeros(72000 // length)
@@ -56,16 +57,10 @@ def getDayData(num, simplify):
     02:00-03:00的1,2,3,4,5...测点数据,
     ...
     """
-    if num < 9:
-        date = '2012-01-0' + str(num + 1)
-    else:
-        date = '2012-01-' + str(num + 1)
+    date = '2012-01-' + str(num + 1).zfill(2)
     data = np.zeros((72000, 912))
     for hour in range(24):
-        if hour < 10:
-            datatemp = hdf5storage.loadmat('../' + date + '/' + date + ' 0' + str(hour) + '-VIB.mat')['data']
-        else:
-            datatemp = hdf5storage.loadmat('../' + date + '/' + date + ' ' + str(hour) + '-VIB.mat')['data']
+        datatemp = hdf5storage.loadmat('../' + date + '/' + date + ' ' + str(hour).zfill(2) + '-VIB.mat')['data']
         for j in range(38):
             data[:, hour * 38 + j] = datatemp[:, j]
 
@@ -87,23 +82,56 @@ def getDayLabel(num):
             wholeLabel[0][j * 38 + k] = label[24 * num + j, k]
     return wholeLabel
 
+def getDataLimited(num,simplify=True):
+    '''每种类型获取同样数量的样本'''
+    data = np.zeros((72000, num*7))
+    wholeLabel = np.zeros((1, num*7))
+    label = getLabel()
+    count = np.zeros(7)
+    col_index = 0
+    finished = False
+    for day in range(30):
+        date = '2012-01-' + str(day + 1).zfill(2)
+        if finished: break
+        for hour in range(24):
+            if finished: break
+            datatemp = hdf5storage.loadmat('../' + date + '/' + date + ' ' + str(hour).zfill(2) + '-VIB.mat')['data']
+            for j in range(38):
+                cur_label=int(label[24 * day + hour, j])
+                if count[cur_label-1]>=num:
+                    continue
+                data[:, col_index] = datatemp[:, j]
+                wholeLabel[0][col_index] = cur_label
+                count[cur_label-1] = count[cur_label-1]+1
+                col_index = col_index+1
+                if min(count)>=num: 
+                    finished = True
+                    break
+    if simplify:
+        data = simplifier(data, length)
+
+    return data,wholeLabel
+
 
 if __name__ == '__main__':
-    data = getDayData(1, True)
-    label = getDayLabel(1)
+    # data = getDayData(1, True)
+    # label = getDayLabel(1)
+    data,label = getDataLimited(20)
     print(data)
     print(label)
     print(data.shape)
     print(label.shape)
-    count=np.zeros(8)
+    count=np.zeros(7)
     for x in label:
         for y in x:
-            count[int(y)]=count[int(y)]+1
+            count[int(y)-1]=count[int(y)-1]+1
     print(count)
     # plot
-    x = np.linspace(1, 3600, 72000 // length)
-    y = []
-    for rows in data:
-        y.append(rows[0])
-    plt.plot(x, y)
-    plt.show()
+    for test_id in np.random.choice(range(140),5):
+        x = np.linspace(1, 3600, 72000 // length)
+        y = []
+        for rows in data:
+            y.append(rows[test_id])
+        plt.plot(x, y)
+        print('当前类型{}'.format(label[0][test_id]))
+        plt.show()
