@@ -7,11 +7,10 @@ from trainer import Trainer
 
 def read_dev_data():
     """
-    Reads pre-built dataframe (dev-data.csv) or the subset (subset_5kls.csv) of original training_data.csv.
+    Reads the subset of original training_data.csv.
     Used for development only
     """
-    source = '../input-dev/subset_5kls.csv'
-    # source = '../input-dev/dev-data.csv'
+    source = '../input/training_data.csv'
     return pd.read_csv(source, index_col=0), None
 
 
@@ -27,7 +26,7 @@ def read_full_data(evaluate_features=False):
     test_data = build_dataframe(test_data)
 
     if evaluate_features:
-        print('***** recomputing infor gain *****')
+        print('***** recomputing info gain *****')
         feature_ig = compute_info_gains(training_data, save=True)
     else:
         print('***** reading cached info gain *****')
@@ -59,8 +58,7 @@ if __name__ == '__main__':
     parser.add_argument('evaluate_features', nargs='?', type=bool, default=True,
                         help='Will read the cache of feature evaluation results if set to False')
     parser.add_argument('mode', nargs='?', type=str, default='prod', choices=['dev', 'prod'],
-                        help='Reads dev data in ../input-dev/ if set to dev mode, otherwise looks for datasets in '
-                             '../input/')
+                        help='Reads dev data in ../input-dev/ if set to dev mode, otherwise looks for datasets in ../input/')
     config = vars(parser.parse_args())
     svm_params = {k: config[k] for k in ('kernel', 'strategy', 'C', 'min_lagmult')}
 

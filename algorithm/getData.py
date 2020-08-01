@@ -1,7 +1,7 @@
 import hdf5storage
 import numpy as np
 import matplotlib.pyplot as plt
-
+from collections import Counter
 """
 num代表第几天，应为0-30
 csv最大列数16384，只能把72000放在行上
@@ -95,7 +95,11 @@ if __name__ == '__main__':
     print(label)
     print(data.shape)
     print(label.shape)
-
+    count=np.zeros(8)
+    for x in label:
+        for y in x:
+            count[int(y)]=count[int(y)]+1
+    print(count)
     # plot
     x = np.linspace(1, 3600, 72000 // length)
     y = []

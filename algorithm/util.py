@@ -164,7 +164,7 @@ def make_training_data(training_path, labels_path):
     # nice and clean
     data = data.join(labels)
     data.set_index(['labels'], inplace=True)
-
+    # print(data)
     return data
 
 

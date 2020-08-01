@@ -1,7 +1,8 @@
+import numpy as np
 from cvxopt import matrix as cvmat
 from cvxopt.solvers import qp, options
 from util import kernel_function
-import numpy as np
+
 
 options['show_progress'] = False  # less verbose
 
