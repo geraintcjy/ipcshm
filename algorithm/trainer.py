@@ -27,6 +27,22 @@ def make_svm_unit(params):
     with open(fpath, 'wb') as f: pickle.dump(unit, f)
     mailbox.put(fpath)
 
+def normalization(X):
+    """
+    把输入数据归一化
+    """
+    # new_X=[]
+    # for line in X:
+    #     _range = np.max(line) - np.min(line)
+    #     if _range>1e-5:
+    #         line=(line - np.min(line)) / _range
+    #     new_X.append(line)
+    # return np.array(new_X)
+    return X
+
+def fast_predict(X,pair):
+    '''根据图形特征快速预测'''
+
 
 class SVMUnit:
     """
@@ -39,7 +55,8 @@ class SVMUnit:
         self.class_lookup = dict({str(kls): 1. for kls in pair[0]}, **{str(kls): -1. for kls in pair[1]})
         self.prediction_lookup = {1.: pair[0], -1.: pair[1]}
         self.strategy = config['strategy']
-        self.svm = SVM(**config).fit(X, self.transform_y(Y))
+        self.svm = SVM(**config).fit(normalization(X), self.transform_y(Y))
+        self.pair = pair
 
     def lookup_predictions(self, preds):
         """
@@ -60,6 +77,10 @@ class SVMUnit:
         """
         vfunc = np.vectorize(lambda kls: self.class_lookup[str(kls)])
         return vfunc(Y)
+
+    def getPair(self):
+        return self.pair
+
 
 
 class Trainer:
@@ -168,6 +189,8 @@ class Trainer:
         unit_preds = []
         n = len(X)
         for unit in self.svm_units:
+            # fast_pd = fast_predict(X,unit.pair)
+            # pd = fast_pd if fast_pd is not None else unit.svm.predict(X)
             pred = unit.lookup_predictions(unit.svm.predict(X))
             unit_preds.append(pred)
         unit_preds = np.array(unit_preds)
@@ -193,4 +216,4 @@ class Trainer:
         return {
             'one_vs_one': self.__one_vs_one_predict__,
             'one_vs_rest': self.__one_vs_rest_predict__
-        }.get(self.config['strategy'])(X)
+        }.get(self.config['strategy'])(normalization(X))

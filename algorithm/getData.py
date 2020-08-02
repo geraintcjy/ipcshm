@@ -46,6 +46,7 @@ def simplifier(data, length):
                 count += 1
 
         answer[i] = new_column
+    
     return answer.T
 
 
@@ -105,6 +106,7 @@ def getDataLimited(num,simplify=True):
                 count[cur_label-1] = count[cur_label-1]+1
                 col_index = col_index+1
                 if min(count)>=num: 
+                    print('max day:{}'.format(day))
                     finished = True
                     break
     if simplify:
@@ -116,7 +118,7 @@ def getDataLimited(num,simplify=True):
 if __name__ == '__main__':
     # data = getDayData(1, True)
     # label = getDayLabel(1)
-    data,label = getDataLimited(20)
+    data,label = getDataLimited(100)
     print(data)
     print(label)
     print(data.shape)

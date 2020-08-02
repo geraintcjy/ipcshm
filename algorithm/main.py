@@ -1,8 +1,11 @@
 import argparse
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 from util import build_dataframe, make_training_data, feature_selection
 from util import read_info_gain, compute_info_gains
 from trainer import Trainer
+
 
 
 def read_dev_data():
@@ -42,6 +45,24 @@ def save_predictions(predictions, test_data):
     df = pd.DataFrame(predictions, index=test_data.index)
     df.to_csv('../output/predicted_labels.csv', header=None)
 
+def getAccuracy(predictions,label_path,test_data,showPlt=False):
+    label=build_dataframe(label_path).values
+    count, total = 0,0
+    for index, prediction in enumerate(predictions):
+        if int(prediction)==int(label[index][0]):
+            count = count+1
+        else:
+            if showPlt:
+                print('序号{} 预测{} 实际{}'.format(index,prediction,label[index][0]))
+                x = np.linspace(1, 3600, 72000 // 15)
+                y = []
+                for pt in test_data.values[index]:
+                    y.append(pt)
+                plt.plot(x, y)
+                plt.show()
+        total = total+1
+    print(count/total)
+        
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='SVM Classifier')
@@ -51,7 +72,7 @@ if __name__ == '__main__':
                         help='The strategy to implement a multiclass SVM. Choose "one_vs_one" or "one_vs_rest"')
     parser.add_argument('C', nargs='?', type=float, default=1.0,
                         help='The regularization parameter that trades off margin size and training error')
-    parser.add_argument('min_lagmult', nargs='?', type=float, default=1e-5,
+    parser.add_argument('min_lagmult', nargs='?', type=float, default=1e-10,
                         help='The support vector\'s minimum Lagrange multipliers value')
     parser.add_argument('cross_validate', nargs='?', type=bool, default=False,
                         help='Whether or not to cross validate SVM')
@@ -66,7 +87,7 @@ if __name__ == '__main__':
         training_data, test_data = read_dev_data()
     elif config['mode'] == 'prod':
         training_data, test_data = read_full_data(config['evaluate_features'])
-
+    print(training_data.shape,test_data.shape)
     trainer = Trainer(training_data, svm_params)
 
     if config['cross_validate']:
@@ -77,3 +98,5 @@ if __name__ == '__main__':
         print('===== predicting test data =====')
         predictions = trainer.predict(test_data.values)
         save_predictions(predictions, test_data)
+        getAccuracy(predictions,'../input/test_labels.csv',test_data,True)
+

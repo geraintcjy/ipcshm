@@ -19,6 +19,8 @@ class HyperplanSeparator:
         """
         sv_selector = alphas > min_lagmult
         sv_alphas = alphas[sv_selector]
+        if max(alphas)<= min_lagmult:
+            print('error')
         sv_Y = Y[sv_selector]
         self.sv_X = X[sv_selector]
         self.kernel = kernel
@@ -92,7 +94,7 @@ class SVM:
         # solve the QP problem to get Lagrange multipliers
         result = qp(P, q, G, h, A, b)
         alphas = np.ravel(result['x'])
-
+        # print(alphas)
         # build the SVM separator that uses only the support vectors
         # whose lagrange multiplier value is greater than the treshold
         self.hyper_separator = HyperplanSeparator(X, Y, K, alphas, **self.__config)
