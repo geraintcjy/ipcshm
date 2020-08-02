@@ -20,7 +20,7 @@ class HyperplanSeparator:
         sv_selector = alphas > min_lagmult
         sv_alphas = alphas[sv_selector]
         if max(alphas)<= min_lagmult:
-            print('error')
+            print('alphas error, max:{}'.format(max(alphas)))
         sv_Y = Y[sv_selector]
         self.sv_X = X[sv_selector]
         self.kernel = kernel

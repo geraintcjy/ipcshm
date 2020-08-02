@@ -76,7 +76,7 @@ def getLabel():
 
 
 def getDayLabel(num):
-    wholeLabel = np.zeros((1, 912))
+    wholeLabel = np.zeros((1, 912),dtype=np.int)
     label = getLabel()
     for j in range(24):
         for k in range(38):
@@ -85,10 +85,11 @@ def getDayLabel(num):
 
 def getDataLimited(num,simplify=True):
     '''每种类型获取同样数量的样本'''
-    data = np.zeros((72000, num*7))
-    wholeLabel = np.zeros((1, num*7))
+    data = np.zeros((72000, num*6))
+    wholeLabel = np.zeros((1, num*6),dtype=np.int)
     label = getLabel()
     count = np.zeros(7)
+    count[1]=999
     col_index = 0
     finished = False
     for day in range(30):
@@ -116,9 +117,9 @@ def getDataLimited(num,simplify=True):
 
 
 if __name__ == '__main__':
-    # data = getDayData(1, True)
-    # label = getDayLabel(1)
-    data,label = getDataLimited(100)
+    data = getDayData(20, True)
+    label = getDayLabel(20)
+    # data,label = getDataLimited(100)
     print(data)
     print(label)
     print(data.shape)
@@ -129,11 +130,12 @@ if __name__ == '__main__':
             count[int(y)-1]=count[int(y)-1]+1
     print(count)
     # plot
-    for test_id in np.random.choice(range(140),5):
-        x = np.linspace(1, 3600, 72000 // length)
-        y = []
-        for rows in data:
-            y.append(rows[test_id])
-        plt.plot(x, y)
-        print('当前类型{}'.format(label[0][test_id]))
-        plt.show()
+    # for test_id in np.random.choice(range(140),5):
+    # for test_id in [38,67]:
+    #     x = np.linspace(1, 3600, 72000 // length)
+    #     y = []
+    #     for rows in data:
+    #         y.append(rows[test_id])
+    #     plt.plot(x, y)
+    #     print('当前类型{}'.format(label[0][test_id]))
+    #     plt.show()

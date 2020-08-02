@@ -29,20 +29,28 @@ def make_svm_unit(params):
 
 def normalization(X):
     """
-    把输入数据归一化
+    把输入数据标准化
     """
     # new_X=[]
     # for line in X:
-    #     _range = np.max(line) - np.min(line)
-    #     if _range>1e-5:
-    #         line=(line - np.min(line)) / _range
+    #     mu = np.mean(line, axis=0)
+    #     sigma = np.std(line, axis=0)
+    #     if sigma>1e-7:
+    #         line = (line - mu) / sigma
     #     new_X.append(line)
     # return np.array(new_X)
     return X
 
-def fast_predict(X,pair):
+def fast_predict(X,pair,predictions):
     '''根据图形特征快速预测'''
-
+    # if [3] in pair:
+    #     data=predictions
+    #     for i,line in enumerate(X):
+    #         _range = np.max(line) - np.min(line)
+    #         if _range<5e-4:
+    #             data[i]=1 if 3==pair[0][0] else -1
+    #     return data
+    return predictions
 
 class SVMUnit:
     """
@@ -189,9 +197,8 @@ class Trainer:
         unit_preds = []
         n = len(X)
         for unit in self.svm_units:
-            # fast_pd = fast_predict(X,unit.pair)
-            # pd = fast_pd if fast_pd is not None else unit.svm.predict(X)
-            pred = unit.lookup_predictions(unit.svm.predict(X))
+            fast_pd = fast_predict(X,unit.pair,unit.svm.predict(X))
+            pred = unit.lookup_predictions(fast_pd)
             unit_preds.append(pred)
         unit_preds = np.array(unit_preds)
         return [Counter(unit_preds[:, i]).most_common(1)[0][0] for i in range(n)]

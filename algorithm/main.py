@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from util import build_dataframe, make_training_data, feature_selection
 from util import read_info_gain, compute_info_gains
-from trainer import Trainer
+from trainer import Trainer,normalization
 
 
 
@@ -48,15 +48,24 @@ def save_predictions(predictions, test_data):
 def getAccuracy(predictions,label_path,test_data,showPlt=False):
     label=build_dataframe(label_path).values
     count, total = 0,0
+    pts=(test_data.values)
     for index, prediction in enumerate(predictions):
-        if int(prediction)==int(label[index][0]):
+        cur_label=label[index][0]
+        if int(prediction)==int(cur_label):
             count = count+1
+            # print('序号{} 预测{} 实际{}'.format(index,prediction,cur_label))
+            # x = np.linspace(1, 3600, 72000 // 15)
+            # y = []
+            # for pt in pts[index]:
+            #     y.append(pt)
+            # plt.plot(x, y)
+            # plt.show()
         else:
-            if showPlt:
-                print('序号{} 预测{} 实际{}'.format(index,prediction,label[index][0]))
+            if showPlt and prediction==2:
+                print('序号{} 预测{} 实际{}'.format(index,prediction,cur_label))
                 x = np.linspace(1, 3600, 72000 // 15)
                 y = []
-                for pt in test_data.values[index]:
+                for pt in pts[index]:
                     y.append(pt)
                 plt.plot(x, y)
                 plt.show()
@@ -72,7 +81,7 @@ if __name__ == '__main__':
                         help='The strategy to implement a multiclass SVM. Choose "one_vs_one" or "one_vs_rest"')
     parser.add_argument('C', nargs='?', type=float, default=1.0,
                         help='The regularization parameter that trades off margin size and training error')
-    parser.add_argument('min_lagmult', nargs='?', type=float, default=1e-10,
+    parser.add_argument('min_lagmult', nargs='?', type=float, default=1e-12,
                         help='The support vector\'s minimum Lagrange multipliers value')
     parser.add_argument('cross_validate', nargs='?', type=bool, default=False,
                         help='Whether or not to cross validate SVM')
@@ -97,6 +106,13 @@ if __name__ == '__main__':
         trainer.train()
         print('===== predicting test data =====')
         predictions = trainer.predict(test_data.values)
-        save_predictions(predictions, test_data)
+        for i,line in enumerate(test_data.values):
+            line_sorted=sorted(line,reverse=True)
+            if abs(line_sorted[int(len(line_sorted)*0.01)]-np.mean(line))<1e-7 and abs(line_sorted[int(len(line_sorted)*0.99)]-np.mean(line))<1e-7:
+                predictions[i]=2
+        # origin_data = build_dataframe('../input/training_data.csv')
+        # p2 = trainer.predict(origin_data.values)
+        # save_predictions(predictions, test_data)
+        # getAccuracy(predictions,'../input/training_labels.csv',origin_data,False)
         getAccuracy(predictions,'../input/test_labels.csv',test_data,True)
 
