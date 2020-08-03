@@ -31,15 +31,15 @@ def normalization(X):
     """
     把输入数据标准化
     """
-    # new_X=[]
-    # for line in X:
-    #     mu = np.mean(line, axis=0)
-    #     sigma = np.std(line, axis=0)
-    #     if sigma>1e-7:
-    #         line = (line - mu) / sigma
-    #     new_X.append(line)
-    # return np.array(new_X)
-    return X
+    new_X=[]
+    for line in X:
+        mu = np.mean(line, axis=0)
+        sigma = np.std(line, axis=0)
+        if sigma>1e-7:
+            line = (line - mu) / sigma
+        new_X.append(line)
+    return np.array(new_X)
+    # return X
 
 def fast_predict(X,pair,predictions):
     '''根据图形特征快速预测'''

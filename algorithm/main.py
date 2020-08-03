@@ -48,7 +48,7 @@ def save_predictions(predictions, test_data):
 def getAccuracy(predictions,label_path,test_data,showPlt=False):
     label=build_dataframe(label_path).values
     count, total = 0,0
-    pts=(test_data.values)
+    pts=normalization(test_data.values)
     for index, prediction in enumerate(predictions):
         cur_label=label[index][0]
         if int(prediction)==int(cur_label):
@@ -61,7 +61,7 @@ def getAccuracy(predictions,label_path,test_data,showPlt=False):
             # plt.plot(x, y)
             # plt.show()
         else:
-            if showPlt and prediction==2:
+            if showPlt and cur_label==6:
                 print('序号{} 预测{} 实际{}'.format(index,prediction,cur_label))
                 x = np.linspace(1, 3600, 72000 // 15)
                 y = []
@@ -79,7 +79,7 @@ if __name__ == '__main__':
                         help='The kernel function to use')
     parser.add_argument('strategy', nargs='?', type=str, default='one_vs_one', choices=['one_vs_one', 'one_vs_rest'],
                         help='The strategy to implement a multiclass SVM. Choose "one_vs_one" or "one_vs_rest"')
-    parser.add_argument('C', nargs='?', type=float, default=1.0,
+    parser.add_argument('C', nargs='?', type=float, default=1,
                         help='The regularization parameter that trades off margin size and training error')
     parser.add_argument('min_lagmult', nargs='?', type=float, default=1e-12,
                         help='The support vector\'s minimum Lagrange multipliers value')
@@ -106,13 +106,17 @@ if __name__ == '__main__':
         trainer.train()
         print('===== predicting test data =====')
         predictions = trainer.predict(test_data.values)
+        origin_data = build_dataframe('../input/training_data.csv')
+        p2 = trainer.predict(origin_data.values)
         for i,line in enumerate(test_data.values):
             line_sorted=sorted(line,reverse=True)
             if abs(line_sorted[int(len(line_sorted)*0.01)]-np.mean(line))<1e-7 and abs(line_sorted[int(len(line_sorted)*0.99)]-np.mean(line))<1e-7:
                 predictions[i]=2
-        # origin_data = build_dataframe('../input/training_data.csv')
-        # p2 = trainer.predict(origin_data.values)
+        for i,line in enumerate(origin_data.values):
+            line_sorted=sorted(line,reverse=True)
+            if abs(line_sorted[int(len(line_sorted)*0.01)]-np.mean(line))<1e-7 and abs(line_sorted[int(len(line_sorted)*0.99)]-np.mean(line))<1e-7:
+                p2[i]=2
         # save_predictions(predictions, test_data)
-        # getAccuracy(predictions,'../input/training_labels.csv',origin_data,False)
-        getAccuracy(predictions,'../input/test_labels.csv',test_data,True)
+        getAccuracy(p2,'../input/training_labels.csv',origin_data,False)
+        getAccuracy(predictions,'../input/test_labels.csv',test_data,False)
 
