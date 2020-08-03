@@ -4,8 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from util import build_dataframe, make_training_data, feature_selection
 from util import read_info_gain, compute_info_gains
-from trainer import Trainer,normalization
-
+from trainer import Trainer, normalization
+from sklearn.metrics import classification_report
 
 
 def read_dev_data():
@@ -45,14 +45,15 @@ def save_predictions(predictions, test_data):
     df = pd.DataFrame(predictions, index=test_data.index)
     df.to_csv('../output/predicted_labels.csv', header=None)
 
-def getAccuracy(predictions,label_path,test_data,showPlt=False):
-    label=build_dataframe(label_path).values
-    count, total = 0,0
-    pts=(test_data.values)
+
+def getAccuracy(predictions, label_path, test_data, showPlt=False):
+    label = build_dataframe(label_path).values
+    count, total = 0, 0
+    pts = (test_data.values)
     for index, prediction in enumerate(predictions):
-        cur_label=label[index][0]
-        if int(prediction)==int(cur_label):
-            count = count+1
+        cur_label = label[index][0]
+        if int(prediction) == int(cur_label):
+            count = count + 1
             # print('序号{} 预测{} 实际{}'.format(index,prediction,cur_label))
             # x = np.linspace(1, 3600, 72000 // 15)
             # y = []
@@ -61,17 +62,17 @@ def getAccuracy(predictions,label_path,test_data,showPlt=False):
             # plt.plot(x, y)
             # plt.show()
         else:
-            if showPlt and prediction==2:
-                print('序号{} 预测{} 实际{}'.format(index,prediction,cur_label))
+            if showPlt and prediction == 2:
+                print('序号{} 预测{} 实际{}'.format(index, prediction, cur_label))
                 x = np.linspace(1, 3600, 72000 // 15)
                 y = []
                 for pt in pts[index]:
                     y.append(pt)
                 plt.plot(x, y)
                 plt.show()
-        total = total+1
-    print(count/total)
-        
+        total = total + 1
+    print(count / total)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='SVM Classifier')
@@ -96,7 +97,7 @@ if __name__ == '__main__':
         training_data, test_data = read_dev_data()
     elif config['mode'] == 'prod':
         training_data, test_data = read_full_data(config['evaluate_features'])
-    print(training_data.shape,test_data.shape)
+    print(training_data.shape, test_data.shape)
     trainer = Trainer(training_data, svm_params)
 
     if config['cross_validate']:
@@ -106,13 +107,18 @@ if __name__ == '__main__':
         trainer.train()
         print('===== predicting test data =====')
         predictions = trainer.predict(test_data.values)
-        for i,line in enumerate(test_data.values):
-            line_sorted=sorted(line,reverse=True)
-            if abs(line_sorted[int(len(line_sorted)*0.01)]-np.mean(line))<1e-7 and abs(line_sorted[int(len(line_sorted)*0.99)]-np.mean(line))<1e-7:
-                predictions[i]=2
+        '''
+        for i, line in enumerate(test_data.values):
+            line_sorted = sorted(line, reverse=True)
+            if abs(line_sorted[int(len(line_sorted) * 0.01)] - np.mean(line)) < 1e-7 and abs(
+                    line_sorted[int(len(line_sorted) * 0.99)] - np.mean(line)) < 1e-7:
+                predictions[i] = 2
+        '''
         # origin_data = build_dataframe('../input/training_data.csv')
         # p2 = trainer.predict(origin_data.values)
         # save_predictions(predictions, test_data)
         # getAccuracy(predictions,'../input/training_labels.csv',origin_data,False)
-        getAccuracy(predictions,'../input/test_labels.csv',test_data,True)
-
+        getAccuracy(predictions, '../input/test_labels.csv', test_data, True)
+        print('------------------Report---------------------')
+        original = labels = pd.read_csv('../input/test_labels.csv', header=None).T
+        print(classification_report(y_true=original, y_pred=predictions, zero_division=0))
