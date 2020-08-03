@@ -83,7 +83,7 @@ def simplifier2(data, length):
                     new_column[2 * j // length] = new_column[2 * j // length + 1] = 0
                 else:
                     new_column[2 * j // length] = cur_mean - all_mean
-                    new_column[2 * j // length + 1] = np.max(np.abs(temp - cur_mean))
+                    new_column[2 * j // length + 1] = np.nanmax(np.abs(temp - cur_mean))
 
                 if j < 72000:
                     temp = [data[j][i]]
