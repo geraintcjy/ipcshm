@@ -10,11 +10,11 @@ getDayData规模为72000*912，每列为一个小时的传感器数据
 getDayLabel规模为1*912，每个数为一个小时的标签
 """
 
-length = 15  # 数据简化的步长
+length = 50  # 数据简化的步长
 
 
-def simplifier(data, length):
-    # 取每length个数中绝对值最大的
+def simplifier1(data, length):
+    """取每length个数中绝对值最大的"""
     col_num = data.shape[1]
     answer = np.zeros((col_num, 72000 // length))
     for i in range(col_num):
@@ -56,6 +56,45 @@ def simplifier(data, length):
     return answer.T
 
 
+def simplifier2(data, length):
+    """
+    第一个数是总均值，第二个数是总方差
+    此后每length返回两个数：length均值-总均值，max(abs(length值-length均值))
+    :param data:
+    :param length:
+    :return:
+    """
+    col_num = data.shape[1]
+    answer = np.zeros((col_num, 72000 * 2 // length + 2))
+    for i in range(col_num):
+        all_mean = np.nanmean(data[:, i])
+        if str(all_mean) == 'NaN':
+            all_mean = all_std = 0
+        else:
+            all_std = np.nanstd(data[:, i])
+        new_column = np.zeros(72000 * 2 // length + 2)
+        new_column[0] = all_mean
+        new_column[1] = all_std
+        temp = []
+        for j in range(72001):
+            if j % length == 0 and j > 0:
+                cur_mean = np.nanmean(temp)
+                if str(cur_mean) == 'NaN':
+                    new_column[2 * j // length] = new_column[2 * j // length + 1] = 0
+                else:
+                    new_column[2 * j // length] = cur_mean - all_mean
+                    new_column[2 * j // length + 1] = np.max(np.abs(temp - cur_mean))
+
+                if j < 72000:
+                    temp = [data[j][i]]
+            else:
+                temp.append(data[j][i])
+
+        answer[i] = new_column
+
+    return answer.T
+
+
 def getDayData(num, simplify):
     """
     列次序：
@@ -72,7 +111,7 @@ def getDayData(num, simplify):
             data[:, hour * 38 + j] = datatemp[:, j]
 
     if simplify:
-        data = simplifier(data, length)
+        data = simplifier2(data, length)
 
     return data
 
@@ -118,7 +157,7 @@ def getDataLimited(num, simplify=True):
                     finished = True
                     break
     if simplify:
-        data = simplifier(data, length)
+        data = simplifier2(data, length)
 
     return data, wholeLabel
 
@@ -136,6 +175,7 @@ if __name__ == '__main__':
         for y in x:
             count[int(y) - 1] = count[int(y) - 1] + 1
     print(count)
+    """
     # plot
     for test_id in np.random.choice(range(140), 5):
         # for test_id in [38,67]:
@@ -146,3 +186,4 @@ if __name__ == '__main__':
         plt.plot(x, y)
         print('当前类型{}'.format(label[0][test_id]))
         plt.show()
+    """

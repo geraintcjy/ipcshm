@@ -107,16 +107,15 @@ if __name__ == '__main__':
         trainer.train()
         print('===== predicting test data =====')
         predictions = trainer.predict(test_data.values)
-        '''
+
         for i, line in enumerate(test_data.values):
             line_sorted = sorted(line, reverse=True)
             if abs(line_sorted[int(len(line_sorted) * 0.01)] - np.mean(line)) < 1e-7 and abs(
                     line_sorted[int(len(line_sorted) * 0.99)] - np.mean(line)) < 1e-7:
                 predictions[i] = 2
-        '''
-        # origin_data = build_dataframe('../input/training_data.csv')
+
         # p2 = trainer.predict(origin_data.values)
-        # save_predictions(predictions, test_data)
+        save_predictions(predictions, test_data)
         # getAccuracy(predictions,'../input/training_labels.csv',origin_data,False)
         getAccuracy(predictions, '../input/test_labels.csv', test_data, True)
         print('------------------Report---------------------')

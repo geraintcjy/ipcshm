@@ -27,6 +27,7 @@ def make_svm_unit(params):
     with open(fpath, 'wb') as f: pickle.dump(unit, f)
     mailbox.put(fpath)
 
+
 def normalization(X):
     """
     把输入数据标准化
@@ -41,7 +42,8 @@ def normalization(X):
     # return np.array(new_X)
     return X
 
-def fast_predict(X,pair,predictions):
+
+def fast_predict(X, pair, predictions):
     '''根据图形特征快速预测'''
     # if [3] in pair:
     #     data=predictions
@@ -51,6 +53,7 @@ def fast_predict(X,pair,predictions):
     #             data[i]=1 if 3==pair[0][0] else -1
     #     return data
     return predictions
+
 
 class SVMUnit:
     """
@@ -88,7 +91,6 @@ class SVMUnit:
 
     def getPair(self):
         return self.pair
-
 
 
 class Trainer:
@@ -197,7 +199,7 @@ class Trainer:
         unit_preds = []
         n = len(X)
         for unit in self.svm_units:
-            fast_pd = fast_predict(X,unit.pair,unit.svm.predict(X))
+            fast_pd = fast_predict(X, unit.pair, unit.svm.predict(X))
             pred = unit.lookup_predictions(fast_pd)
             unit_preds.append(pred)
         unit_preds = np.array(unit_preds)
