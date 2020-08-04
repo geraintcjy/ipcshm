@@ -60,6 +60,7 @@ def simplifier2(data, length):
     """
     第一个数是总均值，第二个数是总方差
     此后每length返回两个数：length均值-总均值，max(abs(length值-length均值))
+    所有数据均乘1000
     :param data:
     :param length:
     :return:
@@ -68,22 +69,22 @@ def simplifier2(data, length):
     answer = np.zeros((col_num, 72000 * 2 // length + 2))
     for i in range(col_num):
         all_mean = np.nanmean(data[:, i])
-        if str(all_mean) == 'NaN':
+        if str(all_mean) == 'NaN' or str(all_mean) == 'nan':
             all_mean = all_std = 0
         else:
             all_std = np.nanstd(data[:, i])
         new_column = np.zeros(72000 * 2 // length + 2)
-        new_column[0] = all_mean
-        new_column[1] = all_std
+        new_column[0] = all_mean * 1000
+        new_column[1] = all_std * 1000
         temp = []
         for j in range(72001):
             if j % length == 0 and j > 0:
                 cur_mean = np.nanmean(temp)
-                if str(cur_mean) == 'NaN':
+                if str(cur_mean) == 'NaN' or str(cur_mean) == 'nan':
                     new_column[2 * j // length] = new_column[2 * j // length + 1] = 0
                 else:
-                    new_column[2 * j // length] = cur_mean - all_mean
-                    new_column[2 * j // length + 1] = np.nanmax(np.abs(temp - cur_mean))
+                    new_column[2 * j // length] = (cur_mean - all_mean) * 1000
+                    new_column[2 * j // length + 1] = np.nanmax(np.abs(temp - cur_mean)) * 1000
 
                 if j < 72000:
                     temp = [data[j][i]]

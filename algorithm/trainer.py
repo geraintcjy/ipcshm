@@ -200,6 +200,8 @@ class Trainer:
         n = len(X)
         for unit in self.svm_units:
             fast_pd = fast_predict(X, unit.pair, unit.svm.predict(X))
+            if str(fast_pd[0]) == 'nan':
+                a = 0
             pred = unit.lookup_predictions(fast_pd)
             unit_preds.append(pred)
         unit_preds = np.array(unit_preds)

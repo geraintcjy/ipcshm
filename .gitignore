@@ -24,3 +24,4 @@ var/
 venv/
 input/temp
 .vscode*
+algorithm/tmp/

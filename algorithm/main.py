@@ -80,13 +80,13 @@ if __name__ == '__main__':
                         help='The kernel function to use')
     parser.add_argument('strategy', nargs='?', type=str, default='one_vs_one', choices=['one_vs_one', 'one_vs_rest'],
                         help='The strategy to implement a multiclass SVM. Choose "one_vs_one" or "one_vs_rest"')
-    parser.add_argument('C', nargs='?', type=float, default=1.0,
+    parser.add_argument('C', nargs='?', type=float, default=0.25,
                         help='The regularization parameter that trades off margin size and training error')
-    parser.add_argument('min_lagmult', nargs='?', type=float, default=1e-12,
+    parser.add_argument('min_lagmult', nargs='?', type=float, default=0,
                         help='The support vector\'s minimum Lagrange multipliers value')
     parser.add_argument('cross_validate', nargs='?', type=bool, default=False,
                         help='Whether or not to cross validate SVM')
-    parser.add_argument('evaluate_features', nargs='?', type=bool, default=True,
+    parser.add_argument('evaluate_features', nargs='?', type=bool, default=False,
                         help='Will read the cache of feature evaluation results if set to False')
     parser.add_argument('mode', nargs='?', type=str, default='prod', choices=['dev', 'prod'],
                         help='Reads dev data in ../input-dev/ if set to dev mode, otherwise looks for datasets in ../input/')
@@ -110,8 +110,8 @@ if __name__ == '__main__':
 
         for i, line in enumerate(test_data.values):
             line_sorted = sorted(line, reverse=True)
-            if abs(line_sorted[int(len(line_sorted) * 0.01)] - np.mean(line)) < 1e-7 and abs(
-                    line_sorted[int(len(line_sorted) * 0.99)] - np.mean(line)) < 1e-7:
+            if abs(line_sorted[int(len(line_sorted) * 0.1)]) < 1e-3 and abs(
+                    line_sorted[int(len(line_sorted) * 0.9)]) < 1e-3:
                 predictions[i] = 2
 
         # p2 = trainer.predict(origin_data.values)
