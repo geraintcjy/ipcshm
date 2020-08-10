@@ -10,7 +10,7 @@ getDayData规模为72000*912，每列为一个小时的传感器数据
 getDayLabel规模为1*912，每个数为一个小时的标签
 """
 
-length = 50  # 数据简化的步长
+length = 20  # 数据简化的步长
 
 
 def simplifier1(data, length):

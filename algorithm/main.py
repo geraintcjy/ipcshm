@@ -80,7 +80,7 @@ if __name__ == '__main__':
                         help='The kernel function to use')
     parser.add_argument('strategy', nargs='?', type=str, default='one_vs_one', choices=['one_vs_one', 'one_vs_rest'],
                         help='The strategy to implement a multiclass SVM. Choose "one_vs_one" or "one_vs_rest"')
-    parser.add_argument('C', nargs='?', type=float, default=0.25,
+    parser.add_argument('C', nargs='?', type=float, default=0,
                         help='The regularization parameter that trades off margin size and training error')
     parser.add_argument('min_lagmult', nargs='?', type=float, default=0,
                         help='The support vector\'s minimum Lagrange multipliers value')
