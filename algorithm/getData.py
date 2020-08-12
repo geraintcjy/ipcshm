@@ -131,14 +131,19 @@ def getDayLabel(num):
 
 
 def getDataLimited(num, simplify=True):
-    """每种类型获取同样数量num的样本"""
-    data = np.zeros((72000, num * 6))
-    wholeLabel = np.zeros((1, num * 6), dtype=np.int)
+    """
+    每种类型获取同样数量num的样本
+    此处将2和4类排除，后续再区分
+    """
+    # 忽略2类和4类
+    exclude = [2, 4]
+
+    data = np.zeros((72000, num * (7 - len(exclude))))
+    wholeLabel = np.zeros((1, num * (7 - len(exclude))), dtype=np.int)
     label = getLabel()
     count = np.zeros(7)
-    """忽略2类和4类"""
-    count[1] = 999
-    count[3] = 999
+    for i in range(len(exclude)):
+        count[exclude[i]] = 999
 
     col_index = 0
     finished = False
