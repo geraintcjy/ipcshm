@@ -143,7 +143,7 @@ def getDataLimited(num, simplify=True):
     label = getLabel()
     count = np.zeros(7)
     for i in range(len(exclude)):
-        count[exclude[i]] = 999
+        count[exclude[i]-1] = 999
 
     col_index = 0
     finished = False
