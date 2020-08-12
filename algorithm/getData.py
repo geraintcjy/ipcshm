@@ -136,7 +136,10 @@ def getDataLimited(num, simplify=True):
     wholeLabel = np.zeros((1, num * 6), dtype=np.int)
     label = getLabel()
     count = np.zeros(7)
+    """忽略2类和4类"""
     count[1] = 999
+    count[3] = 999
+
     col_index = 0
     finished = False
     for day in range(30):
