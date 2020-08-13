@@ -3,7 +3,6 @@ from cvxopt import matrix as cvmat
 from cvxopt.solvers import qp, options
 from util import kernel_function
 
-
 options['show_progress'] = False  # less verbose
 
 
@@ -19,15 +18,15 @@ class HyperplanSeparator:
         """
         sv_selector = alphas > min_lagmult
         sv_alphas = alphas[sv_selector]
-        if max(alphas)<= min_lagmult:
-            print('alphas error, max:{}'.format(max(alphas)))
+        if max(alphas) <= min_lagmult:
+            print('alphas error, max:{}'.format(max(alphas)))  # alphas error, max:4.126959699105797e-14，5和6的分类器可能需要将min_lagmult调的很小
         sv_Y = Y[sv_selector]
         self.sv_X = X[sv_selector]
         self.kernel = kernel
 
         # partial weight is a computation cache used to compute actual weights
         self.partial_weight = sv_alphas * sv_Y
-        self.bias = np.mean(sv_Y - np.sum(self.partial_weight * K[sv_selector][:, sv_selector], axis=1))
+        self.bias = np.nanmean(sv_Y - np.nansum(self.partial_weight * K[sv_selector][:, sv_selector], axis=1))
 
     def predict(self, X):
         if type(X[0]) is not np.ndarray:
