@@ -10,7 +10,7 @@ getDayData规模为72000*912，每列为一个小时的传感器数据
 getDayLabel规模为1*912，每个数为一个小时的标签
 """
 
-length = 20  # 数据简化的步长
+length = 8  # 数据简化的步长
 
 
 def simplifier1(data, length):
@@ -135,8 +135,8 @@ def getDataLimited(num, simplify=True):
     每种类型获取同样数量num的样本
     此处将2和4类排除，后续再区分
     """
-    # 忽略2类和4类
-    exclude = [2, 4]
+    # 忽略2类
+    exclude = [2]
 
     data = np.zeros((72000, num * (7 - len(exclude))))
     wholeLabel = np.zeros((1, num * (7 - len(exclude))), dtype=np.int)

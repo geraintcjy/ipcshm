@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import os
 from sklearn.metrics import classification_report
+import util
 
 training_data_path = '../input/training_data.csv'
 training_labels_path = '../input/training_labels.csv'
@@ -38,7 +39,7 @@ for i in range(len(test_data)):
     if test_data.iat[i, 1] < 0.01:
         predict[i] = 2
     # 4类型判断
-    elif np.max(test_data.iloc[i, 2:]) / test_data.iat[i, 1] > 10:
+    elif np.max(test_data.iloc[i, 2:]) / test_data.iat[i, 1] > 11 and test_data.iat[i, 1] < 0.08 and np.max(test_data.iloc[i, 2:]) < 1:
         predict[i] = 4
 
 print(classification_report(y_true=test_label, y_pred=predict, zero_division=0))
