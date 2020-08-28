@@ -2,10 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
     
-def detect(sample):
+def detect(sample,sd_time):
     '''
     异常点探测
     sample: 原始数据
+    sd_time: 标准差倍数
     '''
     all_err=[]
     e_s = sample
@@ -47,15 +48,13 @@ def detect(sample):
 
         error_buffer = 3
         perc_high, perc_low = np.percentile(sample, [95, 5])
-        inter_range = perc_high - perc_low
-        chan_std = np.std(sample)
         mean = np.mean(window_e_s)
         sd = np.std(window_e_s)
         i_anom = []
         E_seq = []
         for x in range(0, len(window_e_s)):
             anom = True
-            if window_e_s[x] < mean + 6*sd and window_e_s[x] > mean - 6*sd:
+            if window_e_s[x] < mean + sd_time*sd and window_e_s[x] > mean - sd_time*sd:
                 anom = False
             if anom:
                 # print(window_e_s[x],mean ,sd)
@@ -76,16 +75,20 @@ def detect(sample):
             continue
         else:
             err_count += 1
-    err_count += 1
-    print(sd,err_count)
-    for pt in e_s:
-        y.append(pt)
-    plt.plot(x, y)
-    yy = []
-    for ii in all_err:
-        yy.append(e_s[int(ii)])
-    plt.plot(all_err/len(e_s)*3600+1,yy,color='red')
-    plt.show()
+    if err_count > 0.5: 
+        err_count += 1
+    else:
+        for pt in e_s:
+            y.append(pt)
+        plt.plot(x, y)
+        yy = []
+        for ii in all_err:
+            yy.append(e_s[int(ii)])
+        plt.plot(all_err/len(e_s)*3600+1,yy,color='red')
+        plt.show()
+        return err_count
+    # print(sd,err_count)
+
     return err_count
     #inter_range和chan_std如上所示
     #error_buffer是异常点周围被判定为异常区间的范围
