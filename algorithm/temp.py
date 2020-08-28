@@ -1,18 +1,11 @@
-import csv
+import pandas
+import numpy as np
 
-with open('../input/training_labels.csv', encoding='utf-8', mode='r', newline='') as file1:
-    reader = csv.reader(file1)
-    for rows in reader:
-        labels = rows
+da = pandas.DataFrame(np.random.randn(6, 4))
+da = da.T
+print(da)
+se = [0, 0, 1, 1]
+print(da.iloc[:, [1, 2, 3]])
 
-print(labels)
-for i in range(len(labels)):
-    if str(labels[i]) == '4':
-        labels[i] = 1
-    else:
-        labels[i] = 0
-print(labels)
-
-with open('../input/training_labels4.csv', encoding='utf-8', mode='w', newline='') as file2:
-    writer = csv.writer(file2)
-    writer.writerow(labels)
+if 1 in se:
+    print(da.shape[1])

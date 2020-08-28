@@ -11,6 +11,7 @@ getDayLabel规模为1*912，每个数为一个小时的标签
 """
 
 length = 8  # 数据简化的步长
+exclude = [2]  # 忽略2类
 
 
 def simplifier1(data, length):
@@ -133,17 +134,14 @@ def getDayLabel(num):
 def getDataLimited(num, simplify=True):
     """
     每种类型获取同样数量num的样本
-    此处将2和4类排除，后续再区分
     """
-    # 忽略2类
-    exclude = [2]
 
     data = np.zeros((72000, num * (7 - len(exclude))))
     wholeLabel = np.zeros((1, num * (7 - len(exclude))), dtype=np.int)
     label = getLabel()
     count = np.zeros(7)
     for i in range(len(exclude)):
-        count[exclude[i]-1] = 999
+        count[exclude[i] - 1] = 999
 
     col_index = 0
     finished = False
@@ -169,6 +167,18 @@ def getDataLimited(num, simplify=True):
         data = simplifier2(data, length)
 
     return data, wholeLabel
+
+
+def getDayLimited(daynum, simplify=True):
+    data = getDayData(daynum, simplify)
+    label = getDayLabel(daynum)
+    newdata = []
+    newlabel = []
+    for i in range(len(label)):
+        if label[i] not in exclude:
+            newdata.append(data[:, i])
+            newlabel.append(label[i])
+    return newdata, newlabel
 
 
 if __name__ == '__main__':
