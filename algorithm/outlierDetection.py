@@ -65,40 +65,23 @@ def detect(sample, sd_time):
             # 因为最后一个加的幅度不满于config.batchsize
             idx = len(sample)
         window_e_s = e_s[prior_idx:idx]
-        # x = np.linspace(1, 3600, 4800)
-        # y = []
-        # print(prior_idx,idx)
-        # for pt in e_s:
-        #     y.append(pt)
-        # plt.plot(x, y)
-        # yy = []
-        # for ii in window_e_s:
-        #     yy.append(ii)
-        # plt.plot(np.linspace(prior_idx/4800*3600,idx/4800*3600,int(idx-prior_idx)),yy,color='red')
-        # plt.show()
 
         error_buffer = 3
-        perc_high, perc_low = np.percentile(sample, [95, 5])
         mean = np.mean(window_e_s)
         sd = np.std(window_e_s)
         i_anom = []
-        E_seq = []
         for x in range(0, len(window_e_s)):
             anom = True
-            if window_e_s[x] < mean + sd_time * sd and window_e_s[x] > mean - sd_time * sd:
+            if mean + sd_time * sd > window_e_s[x] > mean - sd_time * sd:
                 anom = False
             if anom:
-                # print(window_e_s[x],mean ,sd)
                 for b in range(0, error_buffer):
                     if not prior_idx + x + b in i_anom and not prior_idx + x + b >= len(e_s):
                         i_anom.append(prior_idx + x + b)
                     if not prior_idx + x - b in i_anom and not prior_idx + x - b < 0:
                         i_anom.append(prior_idx + x - b)
         all_err = np.append(all_err, i_anom)
-        # groups = [list(group) for group in mit.consecutive_groups(i_anom)]
-        # E_seq = [(g[0], g[-1]) for g in groups if not g[0] == g[-1]]
-    x = np.linspace(1, 3600, len(e_s))
-    y = []
+
     all_err = np.array(sorted(list(set(all_err))))
     err_count = 0
     for ii in range(len(all_err) - 1):
@@ -108,18 +91,5 @@ def detect(sample, sd_time):
             err_count += 1
     if err_count > 0.5:
         err_count += 1
-    else:
-        pass
-    # print(sd,err_count)
-    for pt in e_s:
-        y.append(pt)
-    y = np.array(y)
-    plt.plot(x, y)
-    yy = []
-    # for ii in all_err:
-    #     yy.append(e_s[int(ii)])
-    # plt.plot(all_err/len(e_s)*3600+1,yy,color='red')
-    plt.show()
     return err_count
-    # inter_range和chan_std如上所示
     # error_buffer是异常点周围被判定为异常区间的范围

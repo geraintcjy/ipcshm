@@ -14,6 +14,7 @@ test_label_path = '../input/test_labels.csv'
 test_data = np.array(util.build_dataframe(training_data_path))
 test_label = np.array(util.build_dataframe(training_labels_path))
 
+"""全部种类的std分布
 place1 = []
 place3 = []
 place4 = []
@@ -101,48 +102,69 @@ pyplot.xlabel('Type')
 pyplot.ylabel('Std Distribution')
 pyplot.legend()
 pyplot.show()
+"""
 
-"""画1类和4类的异常点数量
+"""1类，4类和7类的异常点数量"""
 place4 = []
 place1 = []
-for i in range(len(test_label)):
-    if test_label[i, 0] == 4:
-        place4.append(i)
-test_data4 = test_data[place4, :]
-test_label4 = test_label[place4, :]
+place7 = []
+place5 = []
 for i in range(len(test_label)):
     if test_label[i, 0] == 1:
         place1.append(i)
+    elif test_label[i, 0] == 4:
+        place4.append(i)
+    elif test_label[i, 0] == 5:
+        place5.append(i)
+    elif test_label[i, 0] == 7:
+        place7.append(i)
 test_data1 = test_data[place1, :]
 test_label1 = test_label[place1, :]
-print(test_label1)
-print(test_label4)
+test_data4 = test_data[place4, :]
+test_label4 = test_label[place4, :]
+test_data5 = test_data[place5, :]
+test_label5 = test_label[place5, :]
+test_data7 = test_data[place7, :]
+test_label7 = test_label[place7, :]
 
 predict = []
 count4 = np.zeros(150)
 count1 = np.zeros(150)
+count5 = np.zeros(150)
+count7 = np.zeros(150)
 x = np.arange(0, 150, 1)
 for line in test_data4:
-    err_count = outlierDetection.detect(line, 6)
+    err_count = outlierDetection.detect(line, 8)
     print("--------stat4----------")
     print(err_count)
     count4[err_count] += 1
-    # stan = np.nanstd(line)
-    # print(stan)
 
 for line in test_data1:
-    err_count = outlierDetection.detect(line, 6)
+    err_count = outlierDetection.detect(line, 8)
     print("--------stat1----------")
     print(err_count)
     count1[err_count] += 1
 
+for line in test_data5:
+    err_count = outlierDetection.detect(line, 8)
+    print("--------stat5----------")
+    print(err_count)
+    count5[err_count] += 1
+
+for line in test_data7:
+    err_count = outlierDetection.detect(line, 8)
+    print("--------stat7----------")
+    print(err_count)
+    count7[err_count] += 1
+
 pyplot.plot(x, count1, 'r', label='Type1')
 pyplot.plot(x, count4, 'b', label='Type4')
+pyplot.plot(x, count5, 'y', label='Type5')
+pyplot.plot(x, count7, 'g', label='Type7')
 pyplot.xlabel('Number of Error Points')
 pyplot.ylabel('Counting Number of that Error Points')
 pyplot.legend()
 pyplot.show()
-"""
 
 """
     if 25 > err_count >= 3 and 1000 * abs(stan) < 0.4:

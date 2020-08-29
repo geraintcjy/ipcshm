@@ -4,6 +4,7 @@ from keras.utils import to_categorical
 from sklearn.metrics import classification_report
 from sklearn.preprocessing import scale
 from outlierDetection import detect
+from outlierDetection import classification_6_7
 import numpy as np
 import pandas as pd
 import os
@@ -19,7 +20,7 @@ training_label = np.array(util.build_dataframe(training_labels_path))
 test_data = np.array(util.build_dataframe(test_data_path))
 test_label = np.array(util.build_dataframe(test_label_path))
 
-exclude = [2, 3, 4]  # 在神经网络中不做训练的类
+exclude = [2, 3, 4, 7]  # 在神经网络中不做训练的类
 label_map = {}
 whole = [1, 2, 3, 4, 5, 6, 7]
 k = 0
@@ -32,20 +33,25 @@ print("---------------PreJudging---------------")
 predict = np.zeros(test_label.shape[0], dtype=np.int)
 temp = 0
 for i, line in enumerate(test_data):
-    print("Now Doing: ", temp+1, "/912", sep='')
+    print("Now Doing: ", temp + 1, "/912", sep='')
     temp += 1
-    if temp == 50:
-        break
     # 2类型判断
     line_sorted = sorted(line, reverse=True)
     line_mean = np.nanmean(line_sorted)
-    if abs(line_sorted[int(len(line_sorted) * 0.1)] - line_mean) < 1e-3 and abs(line_sorted[int(len(line_sorted) * 0.9)] - line_mean) < 1e-3:
+    if abs(line_sorted[int(len(line_sorted) * 0.05)] - line_mean) / abs(line_mean) < 1e-3 and abs(
+            line_sorted[int(len(line_sorted) * 0.95)] - line_mean) / abs(line_mean) < 1e-3:
         predict[i] = 2
+    # 3类型判断
+    elif np.nanmax(line) - np.nanmin(line) < 2e-4:
+        predict[i] = 3
+    # 7类型判断
+    elif classification_6_7(line) == 7:
+        predict[i] = 7
     # 4类型判断
     else:
-        err_count = detect(line, 6)
+        err_count = detect(line, 8)
         stan = np.nanstd(line)
-        if 40 >= err_count > 0 and 10000 * abs(stan) < 11:
+        if 25 >= err_count > 1 and 10000 * abs(stan) < 10.5:
             predict[i] = 4
 print("---------------PreJudging Done---------------")
 
