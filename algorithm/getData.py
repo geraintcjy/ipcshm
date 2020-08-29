@@ -12,7 +12,7 @@ getDayLabel规模为1*912，每个数为一个小时的标签
 
 
 length = 8  # 数据简化的步长
-exclude = [2]  # 忽略2类
+exclude = []  # 忽略2类
 
 
 

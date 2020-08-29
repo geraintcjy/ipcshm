@@ -2,6 +2,7 @@ import argparse
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import getData
 from util import build_dataframe, make_training_data, feature_selection
 from util import read_info_gain, compute_info_gains
 from trainer import Trainer, normalization
@@ -46,11 +47,11 @@ def save_predictions(predictions, test_data):
     df.to_csv('../output/predicted_labels.csv', header=None)
 
 
-def getAccuracy(predictions,label_path,test_data,showPlt=False):
-    label=build_dataframe(label_path).values
-    count, total = 0,0
+def getAccuracy(predictions, label_path, test_data, showPlt=False):
+    label = build_dataframe(label_path).values
+    count, total = 0, 0
     # pts=normalization(test_data.values)
-    pts=test_data.values
+    pts = test_data.values
     for index, prediction in enumerate(predictions):
         cur_label = label[index][0]
         if int(prediction) == int(cur_label):
@@ -66,7 +67,7 @@ def getAccuracy(predictions,label_path,test_data,showPlt=False):
             if showPlt and cur_label == 4:
                 print('序号{} 预测{} 实际{}'.format(index, prediction, cur_label))
 
-                x = np.linspace(1, 3600, 72000 // 15)
+                x = np.linspace(1, 3600, 72000 // getData.length)
                 y = []
                 for pt in pts[index]:
                     y.append(pt)
@@ -88,7 +89,7 @@ if __name__ == '__main__':
                         help='The support vector\'s minimum Lagrange multipliers value')
     parser.add_argument('cross_validate', nargs='?', type=bool, default=False,
                         help='Whether or not to cross validate SVM')
-    parser.add_argument('evaluate_features', nargs='?', type=bool, default=False,
+    parser.add_argument('evaluate_features', nargs='?', type=bool, default=True,
                         help='Will read the cache of feature evaluation results if set to False')
     parser.add_argument('mode', nargs='?', type=str, default='prod', choices=['dev', 'prod'],
                         help='Reads dev data in ../input-dev/ if set to dev mode, otherwise looks for datasets in ../input-svm/')
@@ -121,7 +122,7 @@ if __name__ == '__main__':
         print('------------------Report---------------------')
         original = labels = pd.read_csv('../input-svm/test_labels.csv', header=None).T
         print(classification_report(y_true=original, y_pred=predictions, zero_division=0))
-        
+
         # 预测训练集
         # origin_data = build_dataframe('../input-svm/training_data.csv')
         # p2 = trainer.predict(origin_data.values)

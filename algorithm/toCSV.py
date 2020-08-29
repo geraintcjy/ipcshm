@@ -1,7 +1,7 @@
 import getData
 import csv
 
-data, label = getData.getDataLimited(300)
+data, label = getData.getDataLimited(200)
 
 with open('../input/training_data.csv', encoding='utf-8', mode='w', newline='') as file1:
     writer = csv.writer(file1)

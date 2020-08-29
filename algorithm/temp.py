@@ -1,11 +1,11 @@
-import pandas
-import numpy as np
+exclude = [1, 2, 4]
+whole = [1, 2, 3, 4, 5, 6, 7]
+k = 0
+label_map = {}
 
-da = pandas.DataFrame(np.random.randn(6, 4))
-da = da.T
-print(da)
-se = [0, 0, 1, 1]
-print(da.iloc[:, [1, 2, 3]])
+for item in whole:
+    if item not in exclude:
+        label_map[item] = k
+        k += 1
 
-if 1 in se:
-    print(da.shape[1])
+print(label_map)
