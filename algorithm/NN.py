@@ -20,7 +20,7 @@ training_label = np.array(util.build_dataframe(training_labels_path))
 test_data = np.array(util.build_dataframe(test_data_path))
 test_label = np.array(util.build_dataframe(test_label_path))
 
-exclude = [2, 3, 4, 7]  # 在神经网络中不做训练的类
+exclude = [2, 3, 4, 6]  # Exclude these types from Neural Network training
 label_map = {}
 whole = [1, 2, 3, 4, 5, 6, 7]
 k = 0
@@ -28,34 +28,35 @@ for item in whole:
     if item not in exclude:
         label_map[item] = k
         k += 1
-# 预先判断
+# Prejudging
 print("---------------PreJudging---------------")
 predict = np.zeros(test_label.shape[0], dtype=np.int)
 temp = 0
 for i, line in enumerate(test_data):
     print("Now Doing: ", temp + 1, "/912", sep='')
     temp += 1
-    # 2类型判断
+    # Type 2 judging
     line_sorted = sorted(line, reverse=True)
     line_mean = np.nanmean(line_sorted)
     if abs(line_sorted[int(len(line_sorted) * 0.05)] - line_mean) / abs(line_mean) < 1e-3 and abs(
             line_sorted[int(len(line_sorted) * 0.95)] - line_mean) / abs(line_mean) < 1e-3:
         predict[i] = 2
-    # 3类型判断
-    elif np.nanmax(line) - np.nanmin(line) < 2e-4:
+    # Type 3 judging
+    elif np.nanmax(line) - np.nanmin(line) < 4e-4:
         predict[i] = 3
-    # 7类型判断
-    elif classification_6_7(line) == 7:
-        predict[i] = 7
-    # 4类型判断
+    # Type 6 judging
+    elif classification_6_7(line) == 6:
+        predict[i] = 6
+    # Type 4 judging
     else:
         err_count = detect(line, 8)
         stan = np.nanstd(line)
         if 25 >= err_count > 1 and 10000 * abs(stan) < 10.5:
             predict[i] = 4
+
 print("---------------PreJudging Done---------------")
 
-# 剔除这些类
+# Delete these excluding types
 del_lines = []
 for index, line in enumerate(training_label):
     if line[0] in exclude:
@@ -64,7 +65,6 @@ for index, line in enumerate(training_label):
         line[0] = label_map[line[0]]
 training_label = np.delete(training_label, del_lines, axis=0)
 training_data = np.delete(training_data, del_lines, axis=0)
-print(training_label)
 """
 del_lines = []
 for index, line in enumerate(test_label):
@@ -75,10 +75,10 @@ for index, line in enumerate(test_label):
 test_label = np.delete(test_label, del_lines, axis=0)
 test_data = np.delete(test_data, del_lines, axis=0)
 """
-print(classification_report(y_true=test_label[0:50, 0], y_pred=predict[0:50], zero_division=0))
+print(classification_report(y_true=test_label[:, 0], y_pred=predict, zero_division=0))
 training_label = to_categorical(training_label)
 
-# 神经网络
+# Neural Network
 model = Sequential()
 model.add(Dense(units=training_data.shape[1], activation='relu', input_dim=training_data.shape[1]))
 model.add(Dense(units=len(label_map), activation='softmax'))

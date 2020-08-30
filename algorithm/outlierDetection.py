@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import linear_model
+import getData
 
 
 def showPlt(sample):
@@ -16,13 +17,15 @@ def showPlt(sample):
 def classification_6_7(sample, debug=False):
     model = linear_model.LinearRegression()
     y = []
+    x = []
     for index, pt in enumerate(sample):
         if index > 0:
-            if sample[index] == sample[index - 1] or sample[index] < 1e-7:
+            if sample[index] == sample[index - 1] or abs(sample[index]) < 1e-7:
                 continue
         y.append(pt)
-    x = np.linspace(1, 3600, len(y))
-    x, y = x.reshape(-1, 1), np.array(y).reshape(-1, 1)
+        x.append(index*3600/(72000/getData.length))
+    # x = np.linspace(1, 3600, len(y))
+    x, y = np.array(x).reshape(-1, 1), np.array(y).reshape(-1, 1)
     model.fit(x, y)
     score = model.score(x, y)
     if debug:
