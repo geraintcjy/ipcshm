@@ -2,7 +2,7 @@
 
 ### Introduction
 
-This is the project 2 solution for 1st IPC-SHM. Read report. doc for detailed introduction.
+This is the project 2 solution for 1st IPC-SHM. Read our [project report](Report.doc) for detailed introduction.
 
 ### Run Locally
 
