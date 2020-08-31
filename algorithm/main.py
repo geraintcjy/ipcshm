@@ -14,7 +14,7 @@ def read_dev_data():
     Reads the subset of original training_data.csv.
     Used for development only
     """
-    source = '../input-svm/training_data.csv'
+    source = '../input/training_data.csv'
     return pd.read_csv(source, index_col=0), None
 
 
@@ -22,9 +22,9 @@ def read_full_data(evaluate_features=False):
     """
     Read from the original assignment data and perform data pre-processing
     """
-    training_data = '../input-svm/training_data.csv'
-    training_labels = '../input-svm/training_labels.csv'
-    test_data = '../input-svm/test_data.csv'
+    training_data = '../input/training_data.csv'
+    training_labels = '../input/training_labels.csv'
+    test_data = '../input/test_data.csv'
 
     training_data = make_training_data(training_data, training_labels)
     test_data = build_dataframe(test_data)
@@ -64,15 +64,16 @@ def getAccuracy(predictions, label_path, test_data, showPlt=False):
             # plt.plot(x, y)
             # plt.show()
         else:
-            if showPlt and cur_label == 4:
-                print('序号{} 预测{} 实际{}'.format(index, prediction, cur_label))
+            pass
+            # if showPlt and cur_label == 4:
+            # print('序号{} 预测{} 实际{}'.format(index, prediction, cur_label))
 
-                x = np.linspace(1, 3600, 72000 // getData.length)
-                y = []
-                for pt in pts[index]:
-                    y.append(pt)
-                plt.plot(x, y)
-                plt.show()
+            # x = np.linspace(1, 3600, 72000 // getData.length)
+            # y = []
+            # for pt in pts[index]:
+            # y.append(pt)
+            # plt.plot(x, y)
+            # plt.show()
         total = total + 1
     print(count / total)
 
@@ -118,16 +119,7 @@ if __name__ == '__main__':
                 predictions[i] = 2
 
         save_predictions(predictions, test_data)
-        getAccuracy(predictions, '../input-svm/test_labels.csv', test_data, True)
+        getAccuracy(predictions, '../input/test_labels.csv', test_data, True)
         print('------------------Report---------------------')
-        original = labels = pd.read_csv('../input-svm/test_labels.csv', header=None).T
+        original = labels = pd.read_csv('../input/test_labels.csv', header=None).T
         print(classification_report(y_true=original, y_pred=predictions, zero_division=0))
-
-        # 预测训练集
-        # origin_data = build_dataframe('../input-svm/training_data.csv')
-        # p2 = trainer.predict(origin_data.values)
-        # for i,line in enumerate(origin_data.values):
-        #     line_sorted=sorted(line,reverse=True)
-        #     if abs(line_sorted[int(len(line_sorted)*0.01)]-np.mean(line))<1e-7 and abs(line_sorted[int(len(line_sorted)*0.99)]-np.mean(line))<1e-7:
-        #         p2[i]=2
-        # getAccuracy(p2,'../input-svm/training_labels.csv',origin_data,False)

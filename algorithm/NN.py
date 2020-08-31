@@ -14,13 +14,14 @@ training_data_path = '../input/training_data.csv'
 training_labels_path = '../input/training_labels.csv'
 test_data_path = '../input/test_data.csv'
 test_label_path = '../input/test_labels.csv'
+svm_path = '../output/predicted_labels.csv'
 
 training_data = np.array(util.build_dataframe(training_data_path))
 training_label = np.array(util.build_dataframe(training_labels_path))
 test_data = np.array(util.build_dataframe(test_data_path))
 test_label = np.array(util.build_dataframe(test_label_path))
 
-exclude = [2, 3, 4, 6]  # Exclude these types from Neural Network training
+exclude = [2, 3, 4, 5, 6]  # Exclude these types from Neural Network training
 label_map = {}
 whole = [1, 2, 3, 4, 5, 6, 7]
 k = 0
@@ -47,11 +48,14 @@ for i, line in enumerate(test_data):
     # Type 6 judging
     elif classification_6_7(line) == 6:
         predict[i] = 6
+    # Type 5 Judging
+    elif 10000 * np.nanstd(line) > 2000:
+        predict[i] = 5
     # Type 4 judging
     else:
         err_count = detect(line, 8)
         stan = np.nanstd(line)
-        if 25 >= err_count > 1 and 10000 * abs(stan) < 10.5:
+        if 35 >= err_count > 0 and 10000 * abs(stan) < 10.5:
             predict[i] = 4
 
 print("---------------PreJudging Done---------------")
