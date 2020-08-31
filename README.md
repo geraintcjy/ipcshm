@@ -12,5 +12,5 @@ This is the project 2 solution for 1st IPC-SHM. Read report. doc for detailed in
 
 **Step 3**: Run **NN.py**. Train with NN and clever Manual approach.
 
-###Dependencies: 
+### Dependencies
 numpy, pandas, cvxopt, prettytable, hdf5storage
